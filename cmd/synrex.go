@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"synrex/config"
 	"synrex/controller"
@@ -16,7 +17,13 @@ func main() {
 	}
 	fmt.Println("Configuration loaded.")
 
-	c, err := controller.New(cfg)
+	logger := log.New(os.Stderr, "[Synrex] ", 3)
+	logger.Print("Logging initialized.")
 
-	fmt.Println(c)
+	c, err := controller.New(cfg, logger)
+	if err != nil {
+		logger.Fatal("Cannot initialize controller, will exit.")
+	}
+	// initialization is done
+
 }

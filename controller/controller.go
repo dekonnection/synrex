@@ -1,16 +1,21 @@
 package controller
 
-import "synrex/config"
+import (
+	"log"
+	"synrex/config"
+)
 
 // Controller is the main synrex controller
 type Controller struct {
-	cfg config.Config
+	cfg    config.Config
+	logger *log.Logger
 }
 
 // New returns a new controller instance
-func New(cfg config.Config) (c Controller, err error) {
+func New(cfg config.Config, logger *log.Logger) (c Controller, err error) {
 	c = Controller{
-		cfg: cfg,
+		cfg:    cfg,
+		logger: logger,
 	}
 	return
 }
