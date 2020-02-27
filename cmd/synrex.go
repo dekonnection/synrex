@@ -26,4 +26,5 @@ func main() {
 	}
 	// initialization is done
 
+	c.PgConnect()
 }
