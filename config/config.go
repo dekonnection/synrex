@@ -9,14 +9,15 @@ import (
 
 // Config is our config
 type Config struct {
-	DbHost          string `yaml:"db_host"`
-	DbName          string `yaml:"db_name"`
-	DbUser          string `yaml:"db_user"`
-	DbPassword      string `yaml:"db_password"`
-	RoomID          string `yaml:"room_id"`
-	OutputDirectory string `yaml:"output_directory"`
-	BatchSize       int    `yaml:"batch_size"`
-	LogLevel        int    `yaml:"log_level"`
+	DbHost          string            `yaml:"db_host"`
+	DbName          string            `yaml:"db_name"`
+	DbUser          string            `yaml:"db_user"`
+	DbPassword      string            `yaml:"db_password"`
+	Rooms           map[string]string `yaml:"rooms"`
+	OutputDirectory string            `yaml:"output_directory"`
+	LastTsFile      string            `yaml:"last_ts_file"`
+	BatchSize       int               `yaml:"batch_size"`
+	LogLevel        int               `yaml:"log_level"`
 }
 
 // Load config file and return Config struct
