@@ -16,7 +16,7 @@ type Config struct {
 	Rooms           map[string]string `yaml:"rooms"`
 	OutputDirectory string            `yaml:"output_directory"`
 	LastTsFile      string            `yaml:"last_ts_file"`
-	BatchSize       int               `yaml:"batch_size"`
+	DaemonInterval  int               `yaml:"daemon_interval"`
 	LogLevel        int               `yaml:"log_level"`
 }
 

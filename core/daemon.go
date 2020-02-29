@@ -12,15 +12,19 @@ func (c *Controller) Daemon(exit chan<- struct{}) {
 	readFinished := make(chan struct{})
 
 	// our producer, reads from database at regular intervals
-	queryTicker := time.NewTicker(5 * time.Second)
+	queryTicker := time.NewTicker(time.Duration(c.cfg.DaemonInterval) * time.Second)
 	go func() {
 		for {
 			select {
 			case <-queryTicker.C:
 				c.Logger.Print("Daemon: fetching new messages from DB")
-				err := c.queryMessages(rawMessages)
+				lastTS, err := c.queryMessages(rawMessages)
 				if err != nil {
-					c.Logger.Printf("Daemon: cannot fetch messages: %s", err)
+					c.Logger.Printf("Daemon: error while fetching messages: %s", err)
+				}
+				if lastTS != "" { // we got at least one new message, even if query failed after
+					c.Logger.Printf("Daemon: new messages received, last timestamp is %s", lastTS)
+					c.updateLastTimestamp(lastTS)
 				}
 			case <-c.ctx.Done():
 				c.Logger.Print("Daemon: stopping query goroutine")
@@ -30,6 +34,7 @@ func (c *Controller) Daemon(exit chan<- struct{}) {
 		}
 	}()
 
+	// our consumer, read messages from query producer
 	go func() {
 		for {
 			select {
@@ -42,6 +47,7 @@ func (c *Controller) Daemon(exit chan<- struct{}) {
 			}
 		}
 	}()
+
 	<-queryFinished
 	c.Logger.Print("Daemon: query goroutine is finished.")
 	<-readFinished
