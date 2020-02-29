@@ -12,7 +12,9 @@ import (
 )
 
 var (
-	exitMain chan struct{}
+	exitMain  chan struct{}
+	ctx       context.Context
+	cancelCtx context.CancelFunc
 )
 
 func main() {
@@ -33,11 +35,11 @@ func main() {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-signals
-		logger.Print("Exit requested.")
+		logger.Print("Exit signal received.")
 		exit()
 	}()
 
-	ctx, cancelCtx := context.WithCancel(context.Background())
+	ctx, cancelCtx = context.WithCancel(context.Background())
 	defer cancelCtx()
 
 	c, err := core.NewController(ctx, logger, cfg)
@@ -46,12 +48,18 @@ func main() {
 	}
 	// initialization is done
 
-	c.Daemon()
+	exitDaemon := make(chan struct{})
+	go c.Daemon(exitDaemon)
 
-	c.Logger.Print("ok")
+	c.Logger.Print("Main: daemon is running.")
 	<-exitMain
+	c.Logger.Print("Main: exiting, waiting for daemon to stop")
+	<-exitDaemon
+	c.Logger.Print("Main: daemon stopped, bye.")
+
 }
 
 func exit() {
+	cancelCtx()
 	close(exitMain)
 }

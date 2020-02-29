@@ -8,6 +8,7 @@ import (
 
 // Controller is the main synrex controller
 type Controller struct {
+	ctx           context.Context
 	cfg           config.Config
 	Logger        *log.Logger
 	roomsList     []string
@@ -19,6 +20,7 @@ type Controller struct {
 // NewController returns a new controller instance
 func NewController(ctx context.Context, logger *log.Logger, cfg config.Config) (c Controller, err error) {
 	c = Controller{
+		ctx:        ctx,
 		cfg:        cfg,
 		Logger:     logger,
 		roomsList:  []string{},
