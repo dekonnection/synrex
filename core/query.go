@@ -18,7 +18,7 @@ AND e.type='m.room.message'
 ORDER BY e.received_ts;`
 
 // QueryMessages connects to the database and outputs all messages from lastIndex to a chan
-func (c *Controller) queryMessages(rawMessages chan<- [2]string) (lastTS string, err error) {
+func (c *Controller) queryMessages(rawMessages chan<- [2]string) (lastTS string, counter int, err error) {
 	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", c.cfg.DbHost, c.cfg.DbUser, c.cfg.DbPassword, c.cfg.DbName)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -36,6 +36,7 @@ func (c *Controller) queryMessages(rawMessages chan<- [2]string) (lastTS string,
 	for rows.Next() {
 		_ = rows.Scan(&ts, &json)
 		rawMessages <- [2]string{ts, json}
+		counter++
 	}
 
 	lastTS = ts
