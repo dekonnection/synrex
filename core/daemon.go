@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -57,11 +58,15 @@ func (c *Controller) Daemon(exit chan<- struct{}) {
 
 	// a final consumer, read messages from processing producer and log it
 	go func() {
+		f, _ := os.OpenFile("log.jsonl", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		defer f.Close()
 		for {
 			select {
 			case message := <-toLogMessages:
-				fmt.Printf("[<%s> %s]\n", message.Nick, message.Message)
+				formattedMessage := fmt.Sprintf("[<%s> %s]\n", message.Nick, message.Message)
+				f.WriteString(formattedMessage)
 			case <-readFinished: // we stop logging only when we're sure there won't be anymore queries processed
+				f.Sync()
 				c.Logger.Print("Daemon: stopping logging goroutine")
 				close(logFinished)
 				return
