@@ -6,6 +6,6 @@ Synrex exports your synapse room logs to Elasticsearch.
 
 ## TODO
 
-[*] Write last_ts
-[*] Read last_ts
-[ ] use contexts
+* Write last_ts
+* Read last_ts
+* use contexts
