@@ -22,16 +22,16 @@ type unmarshaledMessage struct {
 
 // Message is a processed message
 type Message struct {
-	Timestamp       int
-	OriginTimestamp int
-	Origin          string
-	Sender          string
-	EventID         string
-	RoomID          string
-	Message         string
-	URL             string
-	ChatType        string
-	Nick            string
+	Timestamp       int    `json:"ts"`
+	OriginTimestamp int    `json:"origin_ts"`
+	Origin          string `json:"origin"`
+	Sender          string `json:"sender"`
+	EventID         string `json:"event_id"`
+	RoomID          string `json:"room_id"`
+	Message         string `json:"message"`
+	URL             string `json:"url"`
+	ChatType        string `json:"chat_type"`
+	Nick            string `json:"nick"`
 }
 
 // ProcessMessage returns a Message object from a raw message

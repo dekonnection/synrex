@@ -1,7 +1,7 @@
 package core
 
 import (
-	"fmt"
+	"encoding/json"
 	"os"
 	"time"
 )
@@ -63,16 +63,20 @@ func (c *Controller) Daemon(exit chan<- struct{}) {
 		for {
 			select {
 			case message := <-toLogMessages:
-				formattedMessage := fmt.Sprintf("[<%s> %s]\n", message.Nick, message.Message)
-				f.WriteString(formattedMessage)
+				marshaledJSON, err := json.Marshal(message)
+				if err != nil {
+					c.Logger.Printf("Cannot marshal message: %s", err)
+				}
+				f.WriteString(string(marshaledJSON) + "\n")
 			case <-readFinished: // we stop logging only when we're sure there won't be anymore queries processed
 				f.Sync()
-				c.Logger.Print("Daemon: stopping logging goroutine")
+				c.Logger.Println("Daemon: stopping logging goroutine")
 				close(logFinished)
 				return
 			}
 		}
 	}()
+
 	<-queryFinished
 	c.Logger.Print("Daemon: query goroutine is finished.")
 	<-readFinished
